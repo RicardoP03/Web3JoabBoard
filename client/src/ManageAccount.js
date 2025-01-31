@@ -1,6 +1,5 @@
 import { ethers } from 'ethers';
 import { manageAccountContractAbi, manageAccountContractAdress } from './constant/manageAccountConstant';
-import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 
 
@@ -8,7 +7,6 @@ export const useManageAccount = () => {
     const [accountExists, setAccountExists] = useState(false);
     const [isUserAccount, setIsUserAccount] = useState(false);
     const [accountDetails, setAccountDetails] = useState(null);
-    const navigate = useNavigate;
 
     function getManageAccountContract() {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -48,7 +46,7 @@ export const useManageAccount = () => {
     const handleUserAccountData = async (data) => {
         const { name, email, phone } = data;
         const contract = getManageAccountContract();
-
+    
         try {
             if(!accountExists) {
                 await contract.createUserAccount(name, email, phone);
@@ -58,7 +56,6 @@ export const useManageAccount = () => {
                 await contract.setUserAccountDetails(name, email, phone);
                 await updateUserDetails();
             }
-            navigate("/");
         } 
         catch (error) {
             console.error("Error during account update process:", error);
@@ -78,8 +75,6 @@ export const useManageAccount = () => {
                 await contract.setCompanyAccountDetails(name, description);
                 await updateUserDetails();
             }
-
-            navigate("/");
         } 
         catch (error) {
             console.error("Error during account update process:", error);

@@ -10,6 +10,7 @@ contract ManageAccount {
     mapping(uint64 => User) private users;
 
     uint64 private idCounter = 1;
+    event StateChanged();
 
     modifier validName(string memory _name) {
         require(bytes(_name).length <= 100, "The name maximum length is 100 characters.");
@@ -28,12 +29,14 @@ contract ManageAccount {
         accounts[msg.sender] = idCounter;
         users[idCounter] = new User(idCounter, _name, _email, _phoneNumber);
         idCounter++;
+        emit StateChanged();
     }
 
     function createCompanyAccount(string memory _name, string memory _description) public {
         accounts[msg.sender] = idCounter;
         companyes[idCounter] = new Company(idCounter, _name, _description);
         idCounter++;
+        emit StateChanged();
     }
 
     function checkAccountExists() public view returns(bool) {
@@ -93,9 +96,9 @@ contract ManageAccount {
         c.setDescription(_description);
     }
 
-    function getCompanyDescriptionById(uint64 id) public view returns (string memory) {
+    function getCompanyNameAndDescriptionById(uint64 id) public view returns (string memory, string memory) {
         Company c = companyes[id];
-        return c.getDescription();
+        return (c.getName(), c.getDescription());
     }
 
     function setUserAccountDetails(string memory _name, string memory _email, string memory _phoneNumber) public {

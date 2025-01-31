@@ -1,9 +1,8 @@
 import { ethers } from 'ethers';
 import { manageJobContractAbi, manageJobContractAdress } from './constant/manageJobConstant';
-import { useNavigate } from 'react-router-dom';
+import { manageAccountContractAbi, manageAccountContractAdress } from './constant/manageAccountConstant';
 
 export const useManageJob = () => {
-    const navigate = useNavigate;
 
     function getManageJobContract() {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -11,6 +10,16 @@ export const useManageJob = () => {
         return new ethers.Contract(
             manageJobContractAdress,
             manageJobContractAbi,
+            signer
+        );
+    }
+
+    function getManageAccountContract() {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        return new ethers.Contract(
+            manageAccountContractAdress,
+            manageAccountContractAbi,
             signer
         );
     }
@@ -70,11 +79,25 @@ export const useManageJob = () => {
         return filteredJobs;
     }
 
+    async function attachCompanyDetails(jobs) {
+        const contract = getManageAccountContract();
+        let res = [];
+        for(let i = 0; i < jobs.length; i++) {
+            let job = jobs[i];
+            let [companyName, companyDescription] = await contract.getCompanyNameAndDescriptionById(job.companyId);
+            job.companyName = companyName;
+            job.companyDescription = companyDescription;
+            res.push(job);
+        }
+        return res;
+    }
+
     async function getAllActiveJobs() {
         const contract = getManageJobContract();
         const events = await getJobAddedEvents(contract);
         const filteredEvents = await filterActiveJobs(events, contract);
-        const jobs = await parseJobEvents(filteredEvents);
+        let jobs = await parseJobEvents(filteredEvents);
+        jobs = await attachCompanyDetails(jobs);
         return jobs;
     }
 
@@ -83,7 +106,8 @@ export const useManageJob = () => {
         const contract = getManageJobContract();
         const events = await getJobAddedEventsByCompanyId(id, contract)
         const filteredEvents = await filterActiveJobs(events, contract);
-        const jobs = await parseJobEvents(filteredEvents);
+        let jobs = await parseJobEvents(filteredEvents);
+        jobs = await attachCompanyDetails(jobs);
         return jobs;
     }
 
@@ -91,7 +115,8 @@ export const useManageJob = () => {
         const contract = getManageJobContract();
         const filter = contract.filters.JobAdded(jobId, null);
         const events = await contract.queryFilter(filter, 0, 'latest');
-        const jobs = await parseJobEvents(events);
+        let jobs = await parseJobEvents(events);
+        jobs = await attachCompanyDetails(jobs);
         if(jobs.length == 0) return null;
         return jobs[0];
     }
@@ -102,7 +127,6 @@ export const useManageJob = () => {
 
         try {
             await contract.addJob(jobTitle, city, country, description);
-            navigate("/myJobs");
         } 
         catch (error) {
             console.error("Error during account update process:", error);

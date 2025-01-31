@@ -7,6 +7,8 @@ const JobDetailed = (props) => {
             <br/>
             <h3>Position: {props.job.jobTitle}</h3>
             <p>Location: {props.job.city}, {props.job.country}</p>
+            <p>Company: {props.job.companyName} </p>
+            <p>About the company: {props.job.companyDescription}</p>
             <p>About the position: {props.job.description}</p>
 
             {   

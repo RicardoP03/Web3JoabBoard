@@ -52,7 +52,10 @@ function App() {
     const {
         handleApplication,
         checkIfHasApplied,
-        getApplicantsByjobId
+        getApplicantsByjobId,
+        acceptApplicant,
+        rejectApplicant,
+        getApplications
     } = useManageApplication();
 
     async function connectToMetamask() {
@@ -135,7 +138,8 @@ function App() {
                 <Route path = "/jobs" element = {<JobsPage isUserAccount = {isUserAccount} jobsList = {getAllActiveJobs()}/>}/> 
                 <Route path = "/myJobs" element = {<MyJobsPage isUserAccount = {isUserAccount} 
                                                               jobsList = {accountDetails? getAllActiveJobsByCompany(accountDetails.id) : []}/>}/>     
-                <Route path = "/myJobsApplications" element = {<MyJobsApplications isUserAccount = {isUserAccount}/>}/>  
+                <Route path = "/myJobsApplications" element = {<MyJobsApplications isUserAccount = {isUserAccount} 
+                                                                                   applicationsPromise = {getApplications()}/>}/>  
                 <Route path = "/createAnJob" element = {<CreateJobPage isUserAccount = {isUserAccount} onSubmit = {handleJobData} />}/> 
                 <Route path="/showJob/:id" element = {<ShowJob isUserAccount = {isUserAccount} 
                                                                getData = {retriveJobDetails} 
@@ -144,7 +148,9 @@ function App() {
                                                                checkIsYourJob = {checkIsYourJob}/>}/>  
                 <Route path="/showApplicants/:id" element = {<ShowApplicants isUserAccount = {isUserAccount}  
                                                             getApplicants = {getApplicantsByjobId } 
-                                                            checkIsYourJob = {checkIsYourJob}/>}/>                                                                                
+                                                            checkIsYourJob = {checkIsYourJob}
+                                                            acceptApplicant = {acceptApplicant}
+                                                            rejectApplicant = {rejectApplicant}/>}/>                                                                                
                 <Route path = "*" element = {<NotFound isUserAccount = {isUserAccount} noAccount = {false}/>}/>                             
             </Routes>
         </Router>

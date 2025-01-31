@@ -17,6 +17,8 @@ contract ManageApplications {
 
     uint64 private idCounter = 1;
 
+    event StateChanged();
+
     mapping(uint64 => Application) public  applications;
     mapping(uint64 => uint64[]) public applicationsByJobId;
     mapping(address => mapping(uint64 => bool)) public hasAppliedToJob;
@@ -51,29 +53,34 @@ contract ManageApplications {
         hasAppliedToJob[msg.sender][jobId] = true;
         applicationsList[msg.sender].push(idCounter);
         idCounter++;
+        emit StateChanged();
     }
 
     function rejectApplication(uint64 applicationId) public {
         applications[applicationId].status = 2;
+        emit StateChanged();
     }
 
     function acceptApplication(uint64 applicationId) public {
         applications[applicationId].status = 1;
+        emit StateChanged();
     }
 
     function checkHasApplied(uint64 jobId) public view returns (bool) {
         return  hasAppliedToJob[msg.sender][jobId];
     }
 
-    function getAllApplicantsByJob(uint64 jobId) public view returns (address[] memory, uint64[] memory) {
+    function getAllApplicantsByJob(uint64 jobId) public view returns (address[] memory, uint64[] memory, uint8[] memory) {
         uint64[] memory applicationIds = applicationsByJobId[jobId];
         address[] memory applicants = new address[](applicationIds.length);
+        uint8[] memory statuses = new uint8[](applicationIds.length);
 
         for (uint i = 0; i < applicationIds.length; i++) {
             applicants[i] = applications[applicationIds[i]].user;
+            statuses[i] =  applications[applicationIds[i]].status;
         }
 
-        return (applicants, applicationIds);
+        return (applicants, applicationIds, statuses);
     }
 
 

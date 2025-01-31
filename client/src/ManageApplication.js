@@ -1,10 +1,13 @@
 import { ethers } from 'ethers';
 import { manageApplicationContractAbi, manageApplicationContractAdress } from './constant/manageApplicationsConstant';
 import { manageAccountContractAdress, manageAccountContractAbi } from './constant/manageAccountConstant';
-import { manageJobContractAbi, manageJobContractAdress} from './constant/manageJobConstant';
-import React from 'react';
+import { useManageJob } from './ManageJob';
 
 export const useManageApplication = () => {
+
+    const {
+        retriveJobDetails
+    } = useManageJob();
 
     function getManageApplicationContract() {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -22,16 +25,6 @@ export const useManageApplication = () => {
         return new ethers.Contract(
             manageAccountContractAdress,
             manageAccountContractAbi,
-            signer
-        );
-    }
-
-    function getManageJobContract() {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const signer = provider.getSigner();
-        return new ethers.Contract(
-            manageJobContractAdress,
-            manageJobContractAbi,
             signer
         );
     }
@@ -66,7 +59,8 @@ export const useManageApplication = () => {
         for(let i = 0; i < applicants[0].length; i++) {
             const [id, name, email, phoneNumber] = await contract.getUserAccountDetailsByAddress(applicants[0][i]);
             const applicationId = applicants[1][i];
-            res.push({id, name, email, phoneNumber, applicationId});
+            const status = applicants[2][i];
+            res.push({id, name, email, phoneNumber, applicationId, status});
         }
 
         return res;
@@ -87,10 +81,59 @@ export const useManageApplication = () => {
         return [];
     }
 
+    async function parseApplications(applications) {
+        let res = [];
+        for(let i = 0; i < applications[0].length; i++) {
+           let job = await retriveJobDetails(applications[0][i]);
+           job.status = applications[1][i];
+           res.push(job);
+        }
+        return res;
+    }
+
+    async function getApplications() {
+        const contract =  getManageApplicationContract();
+        try {
+            const applications = await contract. getApplications();
+            const res = await parseApplications(applications);
+            return res;
+        }
+        catch (error){
+            console.error("Error:", error);
+        }
+        return [];
+    }
+
+    async function acceptApplicant(applicationId) {
+        const contract = getManageApplicationContract();
+
+        try {
+            await contract.acceptApplication(applicationId);
+        }
+        catch (error){
+            console.error("Error:", error);
+        }
+    }
+
+
+    async function rejectApplicant(applicationId) {
+        const contract = getManageApplicationContract();
+
+        try {
+            await contract.rejectApplication(applicationId);
+        }
+        catch (error){
+            console.error("Error:", error);
+        }
+    }
+
     return {
         handleApplication,
         checkIfHasApplied,
-        getApplicantsByjobId
+        getApplicantsByjobId,
+        acceptApplicant,
+        rejectApplicant,
+        getApplications
     };
 
 };

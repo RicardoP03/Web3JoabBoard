@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 
 const CreateUserAccountForm = (props) => {
+    const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         name: props.accountDetails ? props.accountDetails.name : "",
         email: props.accountDetails ? props.accountDetails.email : "",
@@ -17,9 +19,16 @@ const CreateUserAccountForm = (props) => {
         }));
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        props.onSubmit(formData);
+        try {
+            await props.onSubmit(formData);
+            if(!props.accountDetails) navigate("/");
+            else navigate("/settings");
+        }
+        catch (error) {
+            console.error("Error:", error);
+        }
     };
 
     return (

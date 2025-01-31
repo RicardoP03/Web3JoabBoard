@@ -8,6 +8,7 @@ const JobShort = (props) => {
             <br/>
             <h3>Position: {props.job.jobTitle}</h3>
             <p>Location: {props.job.city}, {props.job.country}</p>
+            <p>Company: {props.job.companyName} </p>
             <br/>
             <Link to={`/ShowJob/${jobIdHex}`}>
                 <button className="buttonStyle buttonStyleFirstLogin"> See more about the job.</button>

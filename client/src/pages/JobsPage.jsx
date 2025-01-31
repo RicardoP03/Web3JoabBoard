@@ -12,7 +12,7 @@ const JobsPage = (props) => {
             .then(jobsData => {
                 setJobs(jobsData); 
             })
-            .catch(error => console.error("Error fetching jobs:", error));
+            .catch(error => console.error("Error:", error));
     }, [props.jobsList]);
 
     return (

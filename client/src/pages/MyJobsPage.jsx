@@ -14,6 +14,7 @@ const MyJobsPage = (props) => {
             })
             .catch(error => console.error("Error fetching jobs:", error));
     }, [props.jobsList]);
+    
 
     return (
         <div>

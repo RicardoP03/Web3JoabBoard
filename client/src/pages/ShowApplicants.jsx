@@ -77,7 +77,9 @@ const ShowApplicants = (props) => {
                 {
                     applicants?
                     applicants.map((applicant) => (
-                        <ShowApplicant key={applicants.applicationId} applicant={applicant} />
+                        <ShowApplicant key={applicants.applicationId} applicant={applicant} 
+                                       acceptApplicant = {props.acceptApplicant}
+                                       rejectApplicant = {props.rejectApplicant}/>
                     ))
                     :
                     null

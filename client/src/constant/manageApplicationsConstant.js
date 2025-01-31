@@ -17,6 +17,12 @@ const manageApplicationContractAbi =  [
     "type": "constructor"
   },
   {
+    "anonymous": false,
+    "inputs": [],
+    "name": "StateChanged",
+    "type": "event"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint64",
@@ -162,6 +168,11 @@ const manageApplicationContractAbi =  [
         "internalType": "uint64[]",
         "name": "",
         "type": "uint64[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "",
+        "type": "uint8[]"
       }
     ],
     "stateMutability": "view",
