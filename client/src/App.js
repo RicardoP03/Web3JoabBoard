@@ -23,9 +23,8 @@ import './App.css';
 
 
 function App() {
-    const [provider, setProvider] = useState(null);
     const [account, setAccount] = useState(null);
-    const [isConnected, setIsConnected] = useState(false);
+    const [needReload, setNeedReload] = useState(false);
 
     const {
         accountExists,
@@ -38,7 +37,8 @@ function App() {
         checkIsUserAccount,
         handleUserAccountData,
         handleCompanyAccountData,
-        updateUserDetails
+        updateUserDetails,
+        listenForEventAccounts
     } = useManageAccount();
 
     const {
@@ -46,7 +46,8 @@ function App() {
         getAllActiveJobsByCompany,
         handleJobData,
         retriveJobDetails,
-        checkIsYourJob
+        checkIsYourJob,
+        listenForEventJob
     } = useManageJob();
 
     const {
@@ -55,20 +56,18 @@ function App() {
         getApplicantsByjobId,
         acceptApplicant,
         rejectApplicant,
-        getApplications
+        getApplications,
+        listenForEventApplication
     } = useManageApplication();
 
     async function connectToMetamask() {
         if (window.ethereum) {
             try {
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
-                setProvider(provider);
                 await provider.send("eth_requestAccounts", []);
                 const signer = provider.getSigner();
                 const address = await signer.getAddress();
                 setAccount(address);
-                console.log("Metamask Connected : " + address);
-                setIsConnected(true);
                 await updateUserDetails();
 
             } 
@@ -82,6 +81,10 @@ function App() {
         }
     }
 
+    useEffect(() => {
+        connectToMetamask();
+    }, []);
+
     useEffect( () => {
         if (window.ethereum) {
             window.ethereum.on("accountsChanged", handleAccountsChanged)
@@ -94,31 +97,37 @@ function App() {
         }
     })
 
-    async function handleAccountsChanged(accounts) {
-        //reset everything
-        setIsConnected(false);
-        setAccount(null);
-        setAccountExists(false);
-        setIsUserAccount(false);
-        setAccountDetails(null);
-    }
+    useEffect(() => {
+        const interval = setInterval( async() => {
+            await listenForEventAccounts();
+            await listenForEventJob();
+            await listenForEventApplication();
+            if(localStorage.getItem("needsReload") === "true") {
+                localStorage.setItem("needsReload", "false");
+                setNeedReload(true);
+            }
+        }, 2000);
+    
+        return () => clearInterval(interval);
+    }, []); 
 
-    if(!isConnected)  {
-        return (
-            <Router>
-                <Routes>
-                    <Route index element = {<LoginPage connectWallet = {connectToMetamask}/>}/>
-                    <Route path = "*" element = {<NotFound isUserAccount = {isUserAccount} noAccount = {true}/>}/>
-                </Routes>
-            </Router>
-        )
+    useEffect(() => {
+        if(needReload) {
+            window.location.reload();
+            setNeedReload(false);
+        }
+    }, [needReload])
+
+    async function handleAccountsChanged(accounts) {
+        connectToMetamask();
     }
 
     if(!accountExists) {
         return (
             <Router>
                 <Routes>
-                    <Route index element = {<FirstLogin/>}/>
+                    <Route index element = {<LoginPage/>}/>
+                    <Route path = "/FirstLogin" element = {<FirstLogin/>}/>
                     <Route path = "/CreateUserAccount" element = {<CreateUserAccountPage onSubmit = {handleUserAccountData}/>}/>
                     <Route path = "/CreateCompanyAccount" element = {<CreateCompanyAccountPage onSubmit = {handleCompanyAccountData}/>}/>
                     <Route path = "*" element = {<NotFound isUserAccount = {isUserAccount} noAccount = {true}/>}/>

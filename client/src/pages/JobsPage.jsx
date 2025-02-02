@@ -14,7 +14,7 @@ const JobsPage = (props) => {
             })
             .catch(error => console.error("Error:", error));
     }, [props.jobsList]);
-
+    
     return (
         <div>
             <NavBar isUserAccount = {props.isUserAccount}/>

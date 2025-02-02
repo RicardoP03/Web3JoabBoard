@@ -6,6 +6,14 @@ const ShowApplicant = (props) => {
             <p>Name: {props.applicant.name} </p>
             <p>Email: {props.applicant.email} </p>
             <p>Phone number: {props.applicant.phoneNumber}</p> 
+            <p>Linkedin/personal website: 
+                <a href={props.applicant.link} 
+                    style={{ textDecoration: "none", color: "inherit" }}
+                    target="_blank" 
+                    rel="noopener noreferrer">
+                    Click here
+                </a>
+            </p>
 
             {
                 props.applicant.status == 0?

@@ -37,6 +37,7 @@ const ShowJob = (props) => {
         fetchJobData();
     }, [value]);
 
+
     useEffect(() => {
         const fetchCheckIfHasApplied = async () => {
             try {
@@ -69,7 +70,6 @@ const ShowJob = (props) => {
     
         fetchIsYourJob();
     }, [value])
-
 
     return (
         <div>

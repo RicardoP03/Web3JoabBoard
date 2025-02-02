@@ -7,6 +7,7 @@ export const useManageAccount = () => {
     const [accountExists, setAccountExists] = useState(false);
     const [isUserAccount, setIsUserAccount] = useState(false);
     const [accountDetails, setAccountDetails] = useState(null);
+    lastBlock = null;
 
     function getManageAccountContract() {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -44,16 +45,16 @@ export const useManageAccount = () => {
 
 
     const handleUserAccountData = async (data) => {
-        const { name, email, phone } = data;
+        const { name, email, phone, link } = data;
         const contract = getManageAccountContract();
     
         try {
             if(!accountExists) {
-                await contract.createUserAccount(name, email, phone);
+                await contract.createUserAccount(name, email, phone, link);
                 await updateUserDetails();
             }
             else {
-                await contract.setUserAccountDetails(name, email, phone);
+                await contract.setUserAccountDetails(name, email, phone, link);
                 await updateUserDetails();
             }
         } 
@@ -90,8 +91,8 @@ export const useManageAccount = () => {
         else {
             if(isUser) {
                 const contract = getManageAccountContract();
-                const [id, name, email, phoneNumber] = await contract.getUserAccountDetails();
-                setAccountDetails({id, name, email, phoneNumber});
+                const [id, name, email, phoneNumber, link] = await contract.getUserAccountDetails();
+                setAccountDetails({id, name, email, phoneNumber, link});
             }
             else {
                 const contract = getManageAccountContract();
@@ -99,6 +100,18 @@ export const useManageAccount = () => {
                 setAccountDetails({id, name, description});
             }
         }
+    }
+
+    const listenForEventAccounts = async() => {
+        const contract = getManageAccountContract();
+        contract.on("StateChanged", async() => {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const currentBlock = await provider.getBlockNumber(); 
+            if(lastBlock !== null && currentBlock > lastBlock) {
+                localStorage.setItem("needsReload", "true");
+            }
+            lastBlock = currentBlock; 
+        });
     }
 
     return {
@@ -112,6 +125,7 @@ export const useManageAccount = () => {
         checkIsUserAccount,
         handleUserAccountData,
         handleCompanyAccountData,
-        updateUserDetails
+        updateUserDetails,
+        listenForEventAccounts
     };
 };

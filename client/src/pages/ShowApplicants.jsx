@@ -57,7 +57,7 @@ const ShowApplicants = (props) => {
             <div>
                 <NavBar isUserAccount = {props.isUserAccount}/>
                 <div className="centeredContainer">
-                    <p>Sorry, but you don't have access to this page.</p>
+                    <p className="bigText">Sorry, but you don't have access to this page.</p>
                 </div>
             </div>
         )

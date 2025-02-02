@@ -25,9 +25,9 @@ contract ManageAccount {
     }
 
 
-    function createUserAccount(string memory _name, string memory _email, string memory _phoneNumber) public {
+    function createUserAccount(string memory _name, string memory _email, string memory _phoneNumber, string memory _link) public {
         accounts[msg.sender] = idCounter;
-        users[idCounter] = new User(idCounter, _name, _email, _phoneNumber);
+        users[idCounter] = new User(idCounter, _name, _email, _phoneNumber, _link);
         idCounter++;
         emit StateChanged();
     }
@@ -71,18 +71,18 @@ contract ManageAccount {
     }
     
 
-    function getUserAccountDetails() public view returns(uint64, string memory, string memory, string memory) {
+    function getUserAccountDetails() public view returns(uint64, string memory, string memory, string memory, string memory) {
         uint64 id = accounts[msg.sender];
-        if(address(users[accounts[msg.sender]]) == address(0)) return (0, "", "", "");
+        if(address(users[accounts[msg.sender]]) == address(0)) return (0, "", "", "", "");
         User u = users[id];
-        return (id, u.getName(), u.getEmail(), u.getPhoneNumber());
+        return (id, u.getName(), u.getEmail(), u.getPhoneNumber(), u.getLink());
     }
 
-    function getUserAccountDetailsByAddress(address adr) public view returns(uint64, string memory, string memory, string memory) {
+    function getUserAccountDetailsByAddress(address adr) public view returns(uint64, string memory, string memory, string memory, string memory) {
         uint64 id = accounts[adr];
-        if(address(users[accounts[adr]]) == address(0)) return (0, "", "", "");
+        if(address(users[accounts[adr]]) == address(0)) return (0, "", "", "",  "");
         User u = users[id];
-        return (id, u.getName(), u.getEmail(), u.getPhoneNumber());
+        return (id, u.getName(), u.getEmail(), u.getPhoneNumber(), u.getLink());
     }
 
     function getCompanyID(address adr) public view returns (uint64) {
@@ -94,6 +94,7 @@ contract ManageAccount {
         Company c = companyes[id];
         c.setName(_name);
         c.setDescription(_description);
+        emit StateChanged();
     }
 
     function getCompanyNameAndDescriptionById(uint64 id) public view returns (string memory, string memory) {
@@ -107,6 +108,7 @@ contract ManageAccount {
         u.setName(_name);
         u.setEmail(_email);
         u.setPhoneNumber(_phoneNumber);
+        emit StateChanged();
     }
 
     function eraseUserAccountByAddress(address adr) public {

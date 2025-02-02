@@ -3,6 +3,7 @@ import { manageJobContractAbi, manageJobContractAdress } from './constant/manage
 import { manageAccountContractAbi, manageAccountContractAdress } from './constant/manageAccountConstant';
 
 export const useManageJob = () => {
+    let lastBlock = null;
 
     function getManageJobContract() {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -112,6 +113,7 @@ export const useManageJob = () => {
     }
 
     async function retriveJobDetails(jobId) {
+        if(jobId == null) return null;
         const contract = getManageJobContract();
         const filter = contract.filters.JobAdded(jobId, null);
         const events = await contract.queryFilter(filter, 0, 'latest');
@@ -148,11 +150,24 @@ export const useManageJob = () => {
         return false;
     }
 
+    const listenForEventJob = async() => {
+        const contract = getManageJobContract();
+        contract.on("JobAdded", async() => {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const currentBlock = await provider.getBlockNumber(); 
+            if(lastBlock !== null && currentBlock > lastBlock) {
+                localStorage.setItem("needsReload", "true");
+            }
+            lastBlock = currentBlock;
+        });
+    }
+
     return {
         getAllActiveJobs,
         getAllActiveJobsByCompany,
         handleJobData,
         retriveJobDetails,
-        checkIsYourJob
+        checkIsYourJob,
+        listenForEventJob
     }
 }

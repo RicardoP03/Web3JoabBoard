@@ -9,6 +9,7 @@ const CreateUserAccountForm = (props) => {
         name: props.accountDetails ? props.accountDetails.name : "",
         email: props.accountDetails ? props.accountDetails.email : "",
         phone: props.accountDetails ? props.accountDetails.phoneNumber : "",
+        link: props.accountDetails ? props.accountDetails.link : "",
     });
 
     const handleChange = (event) => {
@@ -71,6 +72,18 @@ const CreateUserAccountForm = (props) => {
                 id="phone"
                 name="phone"
                 value={formData.phone}
+                onChange={handleChange}
+                required
+                />
+            </div>
+
+            <div>
+                <label htmlFor="link">Linkedin/personal website:</label>
+                <input
+                type="text"
+                id="link"
+                name="link"
+                value={formData.link}
                 onChange={handleChange}
                 required
                 />

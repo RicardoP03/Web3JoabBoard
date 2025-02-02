@@ -28,16 +28,16 @@ const MyJobsApplications = (props) => {
     return (
         <div>
             <NavBar isUserAccount = {props.isUserAccount}/>
-            {
-                applications.length > 0?
-                <p>Here is the list of the jobs you have applied so far.</p>
-                :
-                <p>You haven't applied yet to any jobs on our website.</p>
-
-            }
-
 
             <div className="centeredContainer">
+                {
+                    applications.length > 0?
+                    <p className="bigText">Here is the list of the jobs you have applied so far.</p>
+                    :
+                    <p className="bigText">You haven't applied yet to any jobs on our website.</p>
+
+                }
+
                 {
                     applications.length > 0?
                     applications.map((application) => (

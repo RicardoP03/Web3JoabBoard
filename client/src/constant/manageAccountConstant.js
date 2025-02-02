@@ -174,6 +174,11 @@ const manageAccountContractAbi =  [
         "internalType": "string",
         "name": "_phoneNumber",
         "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_link",
+        "type": "string"
       }
     ],
     "name": "createUserAccount",
@@ -296,6 +301,11 @@ const manageAccountContractAbi =  [
         "internalType": "string",
         "name": "",
         "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
       }
     ],
     "stateMutability": "view",
@@ -315,6 +325,11 @@ const manageAccountContractAbi =  [
         "internalType": "uint64",
         "name": "",
         "type": "uint64"
+      },
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
       },
       {
         "internalType": "string",

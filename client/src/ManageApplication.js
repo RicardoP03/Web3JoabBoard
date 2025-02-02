@@ -4,6 +4,7 @@ import { manageAccountContractAdress, manageAccountContractAbi } from './constan
 import { useManageJob } from './ManageJob';
 
 export const useManageApplication = () => {
+    let lastBlock = null;
 
     const {
         retriveJobDetails
@@ -57,10 +58,10 @@ export const useManageApplication = () => {
         let res = [];
         const contract = getManageAccountContract();
         for(let i = 0; i < applicants[0].length; i++) {
-            const [id, name, email, phoneNumber] = await contract.getUserAccountDetailsByAddress(applicants[0][i]);
+            const [id, name, email, phoneNumber, link] = await contract.getUserAccountDetailsByAddress(applicants[0][i]);
             const applicationId = applicants[1][i];
             const status = applicants[2][i];
-            res.push({id, name, email, phoneNumber, applicationId, status});
+            res.push({id, name, email, phoneNumber, link, applicationId, status});
         }
 
         return res;
@@ -127,13 +128,27 @@ export const useManageApplication = () => {
         }
     }
 
+    const listenForEventApplication = async() => {
+        const contract = getManageApplicationContract();
+        contract.on("StateChanged", async()  => {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const currentBlock = await provider.getBlockNumber();
+            if(lastBlock !== null && currentBlock > lastBlock) {
+                localStorage.setItem("needsReload", "true");
+            }
+            
+            lastBlock = currentBlock;
+        });
+    }
+
     return {
         handleApplication,
         checkIfHasApplied,
         getApplicantsByjobId,
         acceptApplicant,
         rejectApplicant,
-        getApplications
+        getApplications,
+        listenForEventApplication
     };
 
 };
