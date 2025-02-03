@@ -7,7 +7,7 @@ export const useManageAccount = () => {
     const [accountExists, setAccountExists] = useState(false);
     const [isUserAccount, setIsUserAccount] = useState(false);
     const [accountDetails, setAccountDetails] = useState(null);
-    lastBlock = null;
+    let lastBlock = null;
 
     function getManageAccountContract() {
         const provider = new ethers.providers.Web3Provider(window.ethereum);

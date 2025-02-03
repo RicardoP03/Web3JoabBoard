@@ -2,14 +2,10 @@ require("dotenv").config();
 
 async function main() {
     const privateKey = process.env.PRIVATE_KEY;
-    console.log(privateKey);
     if (!privateKey) {
         console.error("Private key not found in .env file!");
         process.exit(1);
     }
-
-    const deployer = new ethers.Wallet(privateKey, ethers.provider);
-    console.log("Deployer's Address:", deployer.address);
   
     const ManageAccount = await ethers.getContractFactory("ManageAccount");
     const ManageAccountContract = await ManageAccount.deploy();

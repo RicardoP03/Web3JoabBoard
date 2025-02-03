@@ -1,4 +1,4 @@
-const manageAccountContractAdress = "0x5fbdb2315678afecb367f032d93f642f64180aa3";
+const manageAccountContractAdress = "0x3e8f77082a77a623f7242ae5115264b9c484c2c2";
 const manageAccountContractAbi =  [
   {
     "anonymous": false,

@@ -1,4 +1,4 @@
-const manageJobContractAdress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+const manageJobContractAdress = "0x0b10c31306e9a5e32803aa8dae516142be6fcead";
 const manageJobContractAbi = [
   {
     "inputs": [

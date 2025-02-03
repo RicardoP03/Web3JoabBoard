@@ -119,7 +119,7 @@ export const useManageJob = () => {
         const events = await contract.queryFilter(filter, 0, 'latest');
         let jobs = await parseJobEvents(events);
         jobs = await attachCompanyDetails(jobs);
-        if(jobs.length == 0) return null;
+        if(jobs.length === 0) return null;
         return jobs[0];
     }
 
