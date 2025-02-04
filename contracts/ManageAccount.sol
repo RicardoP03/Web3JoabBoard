@@ -24,15 +24,33 @@ contract ManageAccount {
         _;
     }
 
+    modifier validLink(string memory _link) {
+        require(bytes(_link).length <= 200, "The link must have ar most 200 characters");
+        _;
+    }
 
-    function createUserAccount(string memory _name, string memory _email, string memory _phoneNumber, string memory _link) public {
+    modifier validDescription(string memory _desc) {
+        require(bytes(_desc).length <= 1000, "The description must have ar most 1000 characters");
+        _;
+    }
+
+    modifier validPhoneNumber(string memory _number) {
+        require(bytes(_number).length <= 25, "The phone number must have ar most 25 characters");
+        require(checkPhoneNumber(_number), "The number must be an valid format");
+        _;
+    }
+
+
+    function createUserAccount(string memory _name, string memory _email, string memory _phoneNumber, string memory _link) 
+    public validName(_name) validEmail(_email) validPhoneNumber(_phoneNumber) validLink(_link) {
         accounts[msg.sender] = idCounter;
         users[idCounter] = new User(idCounter, _name, _email, _phoneNumber, _link);
         idCounter++;
         emit StateChanged();
     }
 
-    function createCompanyAccount(string memory _name, string memory _description) public {
+    function createCompanyAccount(string memory _name, string memory _description) 
+    public validName(_name) validDescription(_description) {
         accounts[msg.sender] = idCounter;
         companyes[idCounter] = new Company(idCounter, _name, _description);
         idCounter++;
@@ -89,7 +107,8 @@ contract ManageAccount {
         return accounts[adr];
     }
 
-    function setCompanyAccountDetails(string memory _name, string memory _description) public {
+    function setCompanyAccountDetails(string memory _name, string memory _description) 
+    public validName(_name) validDescription(_description) {
         uint64 id = accounts[msg.sender];
         Company c = companyes[id];
         c.setName(_name);
@@ -102,12 +121,14 @@ contract ManageAccount {
         return (c.getName(), c.getDescription());
     }
 
-    function setUserAccountDetails(string memory _name, string memory _email, string memory _phoneNumber) public {
+    function setUserAccountDetails(string memory _name, string memory _email, string memory _phoneNumber, string memory _link) 
+    public validName(_name) validEmail(_email) validPhoneNumber(_phoneNumber) validLink(_link) {
         uint64 id = accounts[msg.sender];
         User u = users[id];
         u.setName(_name);
         u.setEmail(_email);
         u.setPhoneNumber(_phoneNumber);
+        u.setLink(_link);
         emit StateChanged();
     }
 
@@ -125,15 +146,14 @@ contract ManageAccount {
 
     function checkName(string memory _name) public pure returns (bool) {
         bytes memory nameBytes = bytes(_name); 
-        bool hasLetters = false;
 
         for (uint i = 0; i < nameBytes.length; i++) {
             bytes1 char = nameBytes[i];
-            if((char >= 0x41 && char <= 0x5A) || (char >= 0x61 && char <= 0x7A)) hasLetters = true;
+            if((char >= 0x41 && char <= 0x5A) || (char >= 0x61 && char <= 0x7A)) continue;
             else if(char != 0x2D && char != 0x20) return false;
         }
 
-        return hasLetters;
+        return true;
     }
 
      function checkEmail(string memory email) public pure returns (bool) {
@@ -159,5 +179,18 @@ contract ManageAccount {
         }
 
         return hasAtSymbol && hasDotSymbol;
+    }
+
+    function checkPhoneNumber(string memory number) public pure returns (bool) {
+        bytes memory numberBytes = bytes(number);
+        uint len = numberBytes.length;
+
+        for(uint i = 0; i < len; i++) {
+            if(numberBytes[i] == '+' || numberBytes[i] == ' ' || numberBytes[i] == '-' || numberBytes[i] == '(' || numberBytes[i] == ')') continue;
+            else if(numberBytes[i] >= '0' && numberBytes[i] <= '9') continue;
+            else return false;
+        }
+
+        return true;
     }
 }

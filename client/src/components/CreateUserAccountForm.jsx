@@ -20,8 +20,82 @@ const CreateUserAccountForm = (props) => {
         }));
     };
 
+    const [errors, setErrors] = useState({});
+
+    function checkEmail(email) {
+        //email must have format a@b.c and no white spaces;
+
+        let len = email.length;
+        let hasAtSymbol = false;
+        let hasDotSymbol = false;
+        for(let i = 0; i < len; i++) {
+            if(email[i] === 32 || email[i] === 10 || email[i] === 13 || email[i] === 9) {
+                console.log(email[i]);
+                return false;
+            }
+
+            if(email[i] == '@') {
+                hasAtSymbol = true;
+            }
+
+            if(email[i] == '.' && hasAtSymbol) {
+                hasDotSymbol = true;
+            }    
+        }
+
+        return hasAtSymbol && hasDotSymbol;
+    }
+    
+    const validate = () => {
+        let newErrors = {};
+        const nameRegex = /^[A-Za-z\s-]+$/;
+        if(!formData.name.trim()) {
+            newErrors.name = "Name is required";
+        } 
+        else if (formData.name.length > 100) {
+            newErrors.name = "Name must be at most 100 characters long";
+        } 
+        else if (!nameRegex.test(formData.name)) {
+            newErrors.name = "Name can only contain letters, spaces, and hyphens";
+        }
+
+        if (!formData.email.trim()) {
+            newErrors.email = "Email is required";
+        } 
+        else if (formData.email.length >= 100) {
+            newErrors.email = "Email must be at most 100 characters long";
+        }
+        else if(!checkEmail(formData.email)) {
+            newErrors.email = "Email must be an valid one";
+        }
+
+        const phoneRegex = /^\+?[0-9\s\-()]{0,25}$/
+        if(!formData.phone.trim()) {
+            newErrors.phone = "Phone number is required";
+        } 
+        else if (formData.phone.length > 100) {
+            newErrors.phone = "The phone number must be at most 25 characters long";
+        } 
+        else if (!phoneRegex.test(formData.phone)) {
+            newErrors.phone = "The phone number must be an valid one";
+        }
+
+        if (!formData.link.trim()) {
+            newErrors.link = "The Linkedin/personal website link is required";
+        } 
+        else if (formData.link.length >= 200) {
+            newErrors.link = "The link must be at most 200 characters long";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
+
+        if(!validate()) return;
+
         try {
             await props.onSubmit(formData);
             if(!props.accountDetails) navigate("/");
@@ -29,6 +103,10 @@ const CreateUserAccountForm = (props) => {
         }
         catch (error) {
             console.error("Error:", error);
+            let newErrors = {};
+            newErrors.contract = "Something went wrong calling the smart contract, check console!";
+            setErrors(newErrors);
+            return;
         }
     };
 
@@ -36,10 +114,11 @@ const CreateUserAccountForm = (props) => {
         <div>
             {
                 !props.accountDetails ? 
-                <p >Create an account</p> : 
+                <p className="bigText">Create an account</p> : 
                 null
             }
 
+            {errors.contract && <p style={{ color: "red" }}>{errors.contract}</p>}
             <form onSubmit={handleSubmit}>
             <div>
                 <label htmlFor="name">Name:</label>
@@ -51,6 +130,7 @@ const CreateUserAccountForm = (props) => {
                 onChange={handleChange}
                 required
                 />
+                {errors.name && <p style={{ color: "red" }}>{errors.name}</p>}
             </div>
 
             <div>
@@ -63,6 +143,7 @@ const CreateUserAccountForm = (props) => {
                 onChange={handleChange}
                 required
                 />
+                {errors.email && <p style={{ color: "red" }}>{errors.email}</p>}
             </div>
 
             <div>
@@ -75,6 +156,7 @@ const CreateUserAccountForm = (props) => {
                 onChange={handleChange}
                 required
                 />
+                {errors.phone && <p style={{ color: "red" }}>{errors.phone}</p>}
             </div>
 
             <div>
@@ -87,6 +169,7 @@ const CreateUserAccountForm = (props) => {
                 onChange={handleChange}
                 required
                 />
+                {errors.link && <p style={{ color: "red" }}>{errors.link}</p>}
             </div>
 
             <button type="submit" className="buttonStyle buttonStyleFirstLogin"> Submit </button>

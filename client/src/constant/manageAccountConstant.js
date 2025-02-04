@@ -109,6 +109,25 @@ const manageAccountContractAbi =  [
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "number",
+        "type": "string"
+      }
+    ],
+    "name": "checkPhoneNumber",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "checkUserAccount",
     "outputs": [
@@ -383,6 +402,11 @@ const manageAccountContractAbi =  [
       {
         "internalType": "string",
         "name": "_phoneNumber",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_link",
         "type": "string"
       }
     ],

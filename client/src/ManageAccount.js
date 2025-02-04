@@ -7,7 +7,7 @@ export const useManageAccount = () => {
     const [accountExists, setAccountExists] = useState(false);
     const [isUserAccount, setIsUserAccount] = useState(false);
     const [accountDetails, setAccountDetails] = useState(null);
-    let lastBlock = null;
+    let lastBlock = new  ethers.providers.Web3Provider(window.ethereum).currentBlock;
 
     function getManageAccountContract() {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -59,7 +59,7 @@ export const useManageAccount = () => {
             }
         } 
         catch (error) {
-            console.error("Error during account update process:", error);
+            throw error;
         }
     };
 
@@ -78,7 +78,7 @@ export const useManageAccount = () => {
             }
         } 
         catch (error) {
-            console.error("Error during account update process:", error);
+            throw error;
         }
     }
 
@@ -107,10 +107,10 @@ export const useManageAccount = () => {
         contract.on("StateChanged", async() => {
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const currentBlock = await provider.getBlockNumber(); 
-            if(lastBlock !== null && currentBlock > lastBlock) {
+            if(currentBlock > lastBlock) {
                 localStorage.setItem("needsReload", "true");
+                lastBlock = currentBlock; 
             }
-            lastBlock = currentBlock; 
         });
     }
 

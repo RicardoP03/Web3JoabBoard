@@ -1,5 +1,5 @@
 const manageJobContractAdress = "0x0b10c31306e9a5e32803aa8dae516142be6fcead";
-const manageJobContractAbi = [
+const manageJobContractAbi =[
   {
     "inputs": [
       {
@@ -158,6 +158,25 @@ const manageJobContractAbi = [
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      }
+    ],
+    "name": "checkName",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "pure",
     "type": "function"
   },
   {

@@ -28,9 +28,11 @@ const MyJobsPage = (props) => {
 
                 {           
                     !props.isUserAccount ?
-                    <button className="buttonStyle buttonStyleFirstLogin"  style={{ backgroundColor: 'green'}}>
-                        <Link to = "/createAnJob"> Add an new job. </Link>
-                    </button> 
+                    <Link to = "/createAnJob">
+                        <button className="buttonStyle buttonStyleFirstLogin"  style={{ backgroundColor: 'green'}}>
+                                Add an new job.
+                        </button>
+                    </Link>
                     :
                     null
                 }

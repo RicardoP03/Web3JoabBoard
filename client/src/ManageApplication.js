@@ -4,7 +4,7 @@ import { manageAccountContractAdress, manageAccountContractAbi } from './constan
 import { useManageJob } from './ManageJob';
 
 export const useManageApplication = () => {
-    let lastBlock = null;
+    let lastBlock = new  ethers.providers.Web3Provider(window.ethereum).currentBlock;
 
     const {
         retriveJobDetails
@@ -133,11 +133,10 @@ export const useManageApplication = () => {
         contract.on("StateChanged", async()  => {
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const currentBlock = await provider.getBlockNumber();
-            if(lastBlock !== null && currentBlock > lastBlock) {
+            if(currentBlock > lastBlock) {
                 localStorage.setItem("needsReload", "true");
+                lastBlock = currentBlock; 
             }
-            
-            lastBlock = currentBlock;
         });
     }
 

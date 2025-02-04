@@ -3,7 +3,7 @@ import { manageJobContractAbi, manageJobContractAdress } from './constant/manage
 import { manageAccountContractAbi, manageAccountContractAdress } from './constant/manageAccountConstant';
 
 export const useManageJob = () => {
-    let lastBlock = null;
+    let lastBlock = new  ethers.providers.Web3Provider(window.ethereum).currentBlock;
 
     function getManageJobContract() {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -131,7 +131,7 @@ export const useManageJob = () => {
             await contract.addJob(jobTitle, city, country, description);
         } 
         catch (error) {
-            console.error("Error during account update process:", error);
+            throw error;
         }
     };
 
@@ -155,10 +155,10 @@ export const useManageJob = () => {
         contract.on("JobAdded", async() => {
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const currentBlock = await provider.getBlockNumber(); 
-            if(lastBlock !== null && currentBlock > lastBlock) {
+            if(currentBlock > lastBlock) {
                 localStorage.setItem("needsReload", "true");
+                lastBlock = currentBlock; 
             }
-            lastBlock = currentBlock;
         });
     }
 
